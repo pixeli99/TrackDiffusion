@@ -7,7 +7,7 @@
 Pytorch implementation of [TrackDiffusion: Multi-object Tracking Data Generation via Diffusion Models](https://arxiv.org/abs/2312.00651)
 
 > TrackDiffusion: Multi-object Tracking Data Generation via Diffusion Models <br>
-> [Pengxiang Li](https://pixeli99.github.io)<sup>1\*</sup>, [Zhili Liu](https://kaichen1998.github.io/)<sup>2\*</sup>, [Kai Chen](https://kaichen1998.github.io/)<sup>2\*</sup>, [Lanqing Hong](https://scholar.google.com.sg/citations?user=2p7x6OUAAAAJ&hl=en)<sup>3</sup>, Yunzhi Zhuge<sup>1</sup>, [Dit-Yan Yeung](https://sites.google.com/view/dyyeung)<sup>2</sup>, [Huchuan Lu](https://cure-lab.github.io/)<sup>1</sup>, [Xu Jia](https://stephenjia.github.io/)<sup>1^</sup><br>
+> [Pengxiang Li](https://pixeli99.github.io)<sup>1\*</sup>, [Zhili Liu](https://scholar.google.com/citations?user=FdR09jsAAAAJ&hl=zh-TW)<sup>2\*</sup>, [Kai Chen](https://kaichen1998.github.io/)<sup>2\*</sup>, [Lanqing Hong](https://scholar.google.com.sg/citations?user=2p7x6OUAAAAJ&hl=en)<sup>3</sup>, Yunzhi Zhuge<sup>1</sup>, [Dit-Yan Yeung](https://sites.google.com/view/dyyeung)<sup>2</sup>, [Huchuan Lu](https://scholar.google.com/citations?user=D3nE0agAAAAJ&hl=en)<sup>1</sup>, [Xu Jia](https://stephenjia.github.io/)<sup>1^</sup><br>
 > <sup>1</sup>DLUT <sup>2</sup>HKUST <sup>3</sup>Huawei Noah's Ark Lab <br>
 > <sup>\*</sup>Equal Contribution <sup>^</sup>Corresponding Authors
 
@@ -63,7 +63,7 @@ More results can be found in the main paper and [project page](https://kaichen19
 ```bibtex
 @article{li2023trackdiffusion,
   title={TrackDiffusion: Multi-object Tracking Data Generation via Diffusion Models},
-  author={Li, Pengxiang and Liu Zhili, and Chen, Kai and Hong, Lanqing and Zhuge, Yunzhi and Yeung, Dit-Yan and Lu, Huchuan and and Jia, Xu},
+  author={Li, Pengxiang and Liu Zhili, and Chen, Kai and Hong, Lanqing and Zhuge, Yunzhi and Yeung, Dit-Yan and Lu, Huchuan and Jia, Xu},
   journal={arXiv preprint arXiv:2312.00651},
   year={2023}
 }
