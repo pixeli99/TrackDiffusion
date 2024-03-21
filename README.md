@@ -2,37 +2,128 @@
 <img src="assets/figs/favicon.png" alt="TrackDiffusion" width="30%">
 </div>
 
-## TrackDiffusion: Multi-object Tracking Data Generation via Diffusion Models
+## TrackDiffusion: Tracklet-Conditioned Video Generation via Diffusion Models
 
-Pytorch implementation of [TrackDiffusion: Multi-object Tracking Data Generation via Diffusion Models](https://arxiv.org/abs/2312.00651)
-
-> TrackDiffusion: Multi-object Tracking Data Generation via Diffusion Models <br>
-> [Pengxiang Li](https://pixeli99.github.io)<sup>1\*</sup>, [Zhili Liu](https://scholar.google.com/citations?user=FdR09jsAAAAJ&hl=zh-TW)<sup>2\*</sup>, [Kai Chen](https://kaichen1998.github.io/)<sup>2\*</sup>, [Lanqing Hong](https://scholar.google.com.sg/citations?user=2p7x6OUAAAAJ&hl=en)<sup>3</sup>, Yunzhi Zhuge<sup>1</sup>, [Dit-Yan Yeung](https://sites.google.com/view/dyyeung)<sup>2</sup>, [Huchuan Lu](https://scholar.google.com/citations?user=D3nE0agAAAAJ&hl=en)<sup>1</sup>, [Xu Jia](https://stephenjia.github.io/)<sup>1^</sup><br>
-> <sup>1</sup>DLUT <sup>2</sup>HKUST <sup>3</sup>Huawei Noah's Ark Lab <br>
-> <sup>\*</sup>Equal Contribution <sup>^</sup>Corresponding Authors
-
-[![arXiv](https://img.shields.io/badge/ArXiv-2312.00651-brightgreen)](https://arxiv.org/pdf/2312.00651.pdf)
-[![Project page](https://img.shields.io/badge/Project-Page-brightgreen)](https://kaichen1998.github.io/projects/trackdiffusion/)
+Pytorch implementation of [TrackDiffusion: Tracklet-Conditioned Video Generation via Diffusion Models](https://arxiv.org/abs/2312.00651)
 
 ## Abstract 
 
-Diffusion models have gained prominence in generating data for perception tasks such as image classification and object detection. However, the potential in generating high-quality tracking sequences, a crucial aspect in the field of video perception, has not been fully investigated. To address this gap, we propose TrackDiffusion, a novel architecture designed to generate continuous video sequences from the tracklets. TrackDiffusion represents a significant departure from the traditional layout-to-image (L2I) generation and copy-paste synthesis focusing on static image elements like bounding boxes by empowering image diffusion models to encompass dynamic and continuous tracking trajectories, thereby capturing complex motion nuances and ensuring instance consistency among video frames. For the first time, we demonstrate that the generated video sequences can be utilized for training multi-object tracking (MOT) systems, leading to significant improvement in tracker performance. Experimental results show that our model significantly enhances instance consistency in generated video sequences, leading to improved perceptual metrics. Our approach achieves an improvement of 8.7 in TrackAP and 11.8 in TrackAP$_{50}$ on the YTVIS dataset, underscoring its potential to redefine the standards of video data generation for MOT tasks and beyond.
+Despite remarkable achievements in video synthesis, achieving granular control over complex dynamics, such as nuanced movement among multiple interacting objects, still presents a significant hurdle for dynamic world modeling, compounded by the necessity to manage appearance and disappearance, drastic scale changes, and ensure consistency for instances across frames.
+These challenges hinder the development of video generation that can faithfully mimic real-world complexity, limiting utility for applications requiring high-level realism and controllability, including advanced scene simulation and training of perception systems.
+To address that, we propose TrackDiffusion, a novel video generation framework affording fine-grained trajectory-conditioned motion control via diffusion models, which facilitates the precise manipulation of the object trajectories and interactions, overcoming the prevalent limitation of scale and continuity disruptions. 
+A pivotal component of TrackDiffusion is the instance enhancer, which explicitly ensures inter-frame consistency of multiple objects, a critical factor overlooked in the current literature.
+Moreover, we demonstrate that generated video sequences by our TrackDiffusion can be used as training data for visual perception models.
+To the best of our knowledge, this is the first work to apply video diffusion models with tracklet conditions and demonstrate that generated frames can be beneficial for improving the performance of object trackers.
 
 ## Method
 
-The framework generates video frames based on the provided tracklets and employs the **Instance Enhancer** to reinforce the temporal consistency of foreground instance. A new gated cross-attention layer is inserted to take in the new instance information..
-
+The framework generates video frames based on the provided tracklets and employs the **Instance Enhancer** to reinforce the temporal consistency of foreground instance. A new gated cross-attention layer is inserted to take in the new instance information.
 ![framework](assets/figs/framework.png)
+
+## Getting Started
+
+### Environment Setup
+The code is tested with Pytorch==2.0.1 and cuda 11.8 on A800 servers. To setup the python environment, follow:
+```bash
+cd ${ROOT}
+pip install -r requirements.txt
+# continue to install `third_party`s
+```
+### Pretrained Weights
+
+| ModelScope Version | Stable Video Diffusion Version |
+|:------------------:|--------------------------------|
+| [weight]()         | Our training are based on `stabilityai/stable-video-diffusion-img2vid`. You can access the following links to obtain the weights for stage1 and stage2:<br>[Stage1]()<br>[Stage2]() |
+
 
 ## Training
 
-Coming soon.
+### 1. Convert Annotations
 
+We use CocoVID to maintain all datasets in this codebase. In this case, you need to convert the official annotations to this style. We provide scripts and the usages are as following:
+
+```python
+cd ./third_party/mmtracking
+
+# YouTube-VIS 2019
+python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtube_vis_2019 -o ./data/youtube_vis_2019/annotations --version 2019
+
+# YouTube-VIS 2021
+python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtube_vis_2021 -o ./data/youtube_vis_2021/annotations --version 2021
+```
+The folder structure will be as following after your run these scripts:
+```
+│   ├── youtube_vis_2019
+│   │   │── train
+│   │   │   │── JPEGImages
+│   │   │   │── ......
+│   │   │── valid
+│   │   │   │── JPEGImages
+│   │   │   │── ......
+│   │   │── test
+│   │   │   │── JPEGImages
+│   │   │   │── ......
+│   │   │── train.json (the official annotation files)
+│   │   │── valid.json (the official annotation files)
+│   │   │── test.json (the official annotation files)
+│   │   │── annotations (the converted annotation file)
+│   │
+│   ├── youtube_vis_2021
+│   │   │── train
+│   │   │   │── JPEGImages
+│   │   │   │── instances.json (the official annotation files)
+│   │   │   │── ......
+│   │   │── valid
+│   │   │   │── JPEGImages
+│   │   │   │── instances.json (the official annotation files)
+│   │   │   │── ......
+│   │   │── test
+│   │   │   │── JPEGImages
+│   │   │   │── instances.json (the official annotation files)
+│   │   │   │── ......
+│   │   │── annotations (the converted annotation file)
+```
+
+### 2. For T2V Training
+
+Launch training with (with 8xA800):
+```bash
+bash ./scripts/t2v.sh
+```
+
+### 3. For I2V Training
+
+**Stage 1: Training with RGB boxes**
+
+Launch training with (with 8xA800):
+```bash
+bash ./scripts/stage1.sh
+```
+
+**Stage 2: Training with boxes only**
+
+Launch training with (with 8xA800):
+```bash
+bash ./scripts/stage2.sh
+```
+
+### 3. WebDemo
+To simplify the interaction, we use an LLM to automatically generate trajectories, so please remember to replace the OpenAI key in the file(`client.api_key`).
+```bash
+python web_demo.py
+```
+
+- Upload an image.
+- Click the **Detect Objects** button
+- Write your motion prompt (based on GPT-4)
+- Click **Gen Video** button
+
+![webdemo](assets/figs/webdemo.png)
 ## Results
 
 - Compare TrackDiffusion with other methods for generation quality:
 
-![main_results](assets/figs/fidelity.png)
+![main_results](./assets/figs/demo.png)
 
 - Training support with frames generated from TrackDiffusion:
 
@@ -42,29 +133,15 @@ Coming soon.
 
 More results can be found in the main paper.
 
-## Visualization
-
-- Challenging Scenarios
-
-Tracklet-to-video generation in the (a) scale variation (b) challenging overlapping and (c) re-occurrence scenarios.
-
-![cs](./assets/vis_res/teaser.png)
-
-- GOT10K Dataset
-![got](./assets/vis_res/got_data.png)
-
-- YTVIS Dataset
-![ytvis](./assets/vis_res/ytvis_data.png)
-
-More results can be found in the main paper and [project page](https://kaichen1998.github.io/projects/trackdiffusion/).
-
 ## Cite Us
 
 ```bibtex
-@article{li2023trackdiffusion,
-  title={TrackDiffusion: Multi-object Tracking Data Generation via Diffusion Models},
-  author={Li, Pengxiang and Liu Zhili, and Chen, Kai and Hong, Lanqing and Zhuge, Yunzhi and Yeung, Dit-Yan and Lu, Huchuan and Jia, Xu},
-  journal={arXiv preprint arXiv:2312.00651},
-  year={2023}
+@misc{li2024trackdiffusion,
+      title={TrackDiffusion: Tracklet-Conditioned Video Generation via Diffusion Models}, 
+      author={Pengxiang Li and Kai Chen and Zhili Liu and Ruiyuan Gao and Lanqing Hong and Guo Zhou and Hua Yao and Dit-Yan Yeung and Huchuan Lu and Xu Jia},
+      year={2024},
+      eprint={2312.00651},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
 }
 ```
