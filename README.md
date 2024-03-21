@@ -29,6 +29,28 @@ cd ${ROOT}
 pip install -r requirements.txt
 # continue to install `third_party`s
 ```
+#### Install MMTracking
+```bash
+pip install https://download.openmmlab.com/mmcv/dist/cu117/torch2.0.0/mmcv-2.0.0-cp310-cp310-manylinux1_x86_64.whl
+
+git clone https://github.com/open-mmlab/mmtracking.git -b v1.0.0rc0
+
+cd mmtracking
+pip install -e .
+```
+
+#### Install Diffusers
+```bash
+cd third_party/diffusers
+pip install -e .
+```
+
+### Dataset
+Please download the datasets from the official websites.
+[YouTube-VIS](https://youtube-vos.org/dataset/vis/)
+
+YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users in China): https://opendatalab.com/YouTubeVIS2019/download
+
 ### Pretrained Weights
 
 | ModelScope Version | Stable Video Diffusion Version |
