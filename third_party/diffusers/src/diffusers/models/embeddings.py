@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import math
+import os
 from typing import Optional
 
 import numpy as np
@@ -19,6 +20,7 @@ import torch
 from torch import nn
 
 from .activations import get_activation
+from .attention_processor import Attention
 
 
 def get_timestep_embedding(
@@ -563,13 +565,20 @@ class FourierEmbedder(nn.Module):
 
 
 class PositionNet(nn.Module):
-    def __init__(self, positive_len, out_dim, fourier_freqs=8):
+    def __init__(self, positive_len, out_dim, fourier_freqs=8, location_type='bbox'):
         super().__init__()
         self.positive_len = positive_len
         self.out_dim = out_dim
-
+        if os.getenv('ADD_INS_EMBED', 'false') == 'true':
+            self.instance_embedding = nn.Embedding(20, out_dim)
+            nn.init.zeros_(self.instance_embedding.weight)
+        else:
+            print("***********NO INS EMBEDDING!**************")
         self.fourier_embedder = FourierEmbedder(num_freqs=fourier_freqs)
-        self.position_dim = fourier_freqs * 2 * 4  # 2: sin/cos, 4: xyxy
+        if location_type == 'bbox':
+            self.position_dim = fourier_freqs * 2 * 4  # 2: sin/cos, 4: xyxy
+        else:
+            self.position_dim = fourier_freqs * 2 * 2  # 2: sin/cos, 2: xy
 
         if isinstance(out_dim, tuple):
             out_dim = out_dim[0]
@@ -583,12 +592,29 @@ class PositionNet(nn.Module):
 
         self.null_positive_feature = torch.nn.Parameter(torch.zeros([self.positive_len]))
         self.null_position_feature = torch.nn.Parameter(torch.zeros([self.position_dim]))
+        
+        if 'fuse' in os.environ.get("injector_on"):
+            self.tracklet_attn = Attention(query_dim=self.position_dim, heads=4, dim_head=32)
+            self.tracklet_norm = nn.LayerNorm(self.position_dim)
+            if os.environ.get("track_query", 'false') == 'false':
+                self.tracklet_linears = nn.Sequential(
+                    nn.Linear(self.position_dim, 128),
+                    nn.SiLU(),
+                    nn.Linear(128, 128),
+                )
+            else:
+                self.tracklet_linears = nn.Sequential(
+                    nn.Linear(self.position_dim * 2 + out_dim, 512),
+                    nn.SiLU(),
+                    nn.Linear(512, out_dim),
+                )
+                
 
     def forward(self, boxes, masks, positive_embeddings):
         masks = masks.unsqueeze(-1)
 
         # embedding position (it may includes padding as placeholder)
-        xyxy_embedding = self.fourier_embedder(boxes)  # B*N*4 -> B*N*C
+        loc_embedding = self.fourier_embedder(boxes)  # B*N*(2 or 4) -> B*N*C
 
         # learnable null embedding
         positive_null = self.null_positive_feature.view(1, 1, -1)
@@ -596,7 +622,32 @@ class PositionNet(nn.Module):
 
         # replace padding with learnable null embedding
         positive_embeddings = positive_embeddings * masks + (1 - masks) * positive_null
-        xyxy_embedding = xyxy_embedding * masks + (1 - masks) * xyxy_null
+        loc_embedding = loc_embedding * masks + (1 - masks) * xyxy_null
+        
+        if 'fuse' in os.environ.get("injector_on"):
+            tracklet_embedding = loc_embedding.reshape(loc_embedding.shape[0], loc_embedding.shape[-2] // 20, 20, 64).permute(0, 2, 1, 3).flatten(0, 1).clone()
+            tracklet_embedding = tracklet_embedding + self.tracklet_attn(self.tracklet_norm(tracklet_embedding))
+            if os.environ.get("track_query", 'false') == 'true':
+                init_loc = loc_embedding.reshape(loc_embedding.shape[0], loc_embedding.shape[-2] // 20, 20, 64).permute(0, 2, 1, 3).flatten(0, 1).clone()
+                init_ins = self.instance_embedding.weight.unsqueeze(1).repeat(tracklet_embedding.shape[0] // 20, tracklet_embedding.shape[1], 1)
+                tracklet_embedding = self.tracklet_linears(torch.cat([init_loc, tracklet_embedding, init_ins], dim=-1)).view(loc_embedding.shape[0], 20, -1, 768).permute(0, 2, 1, 3) # bs, 20, num_frames, 128
+            else:
+                tracklet_embedding = self.tracklet_linears(tracklet_embedding).view(loc_embedding.shape[0], 20, -1, 128).permute(0, 2, 1, 3) # 20, num_frames, 128
 
-        objs = self.linears(torch.cat([positive_embeddings, xyxy_embedding], dim=-1))
-        return objs
+        objs = self.linears(torch.cat([positive_embeddings, loc_embedding], dim=-1))
+        
+        add_ins_embed_str = os.getenv('ADD_INS_EMBED', 'false')
+        add_ins_embed = add_ins_embed_str.lower() == 'true'
+        # if self.training and add_ins_embed is False:
+        #     print('add_ins_embed is False, check it!')
+        if not self.training and add_ins_embed is False:
+            print('Infer now, add_ins_embed is False, check it!')
+        if add_ins_embed:
+            assert self.instance_embedding.weight.requires_grad
+            _num_frames = objs.shape[-2] // 20
+            repeated_embeddings = self.instance_embedding.weight.repeat(_num_frames, 1).unsqueeze(0).expand_as(objs)
+            objs = objs + repeated_embeddings
+        if 'fuse' in os.environ.get("injector_on"):
+            return objs, tracklet_embedding
+        else:
+            return objs, None

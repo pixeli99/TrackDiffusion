@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Any, Dict, Optional
+import os
 
 import torch
 import torch.nn.functional as F
@@ -55,6 +56,125 @@ class GatedSelfAttentionDense(nn.Module):
 
         return x
 
+@maybe_allow_in_graph
+class GatedSelfAttentionTrack(nn.Module):
+    def __init__(self, query_dim, context_dim, n_heads, d_head):
+        super().__init__()
+
+        self.attn = Attention(query_dim=query_dim, heads=n_heads, dim_head=d_head)
+        self.ff = FeedForward(query_dim, activation_fn="geglu")
+
+        self.norm1 = nn.LayerNorm(query_dim)
+        self.norm2 = nn.LayerNorm(query_dim)
+
+        self.register_parameter("alpha_attn", nn.Parameter(torch.tensor(0.0)))
+        self.register_parameter("alpha_dense", nn.Parameter(torch.tensor(0.0)))
+
+        self.enabled = True
+
+    def forward(self, x, objs):
+        if not self.enabled:
+            return x
+
+        n_visual = x.shape[1]
+
+        x = x + self.alpha_attn.tanh() * self.attn(self.norm1(torch.cat([x, objs], dim=1)))[:, :n_visual, :]
+        x = x + self.alpha_dense.tanh() * self.ff(self.norm2(x))
+
+        return x
+
+@maybe_allow_in_graph
+class GatedCrossAttentionTrackFuseQuery(nn.Module):
+    def __init__(self, query_dim, context_dim, n_heads, d_head):
+        super().__init__()
+
+        self.linear = nn.Linear(context_dim, query_dim)
+        self.attn1 = Attention(query_dim=query_dim, heads=n_heads, dim_head=d_head)
+        self.attn2 = Attention(query_dim=query_dim, heads=n_heads, dim_head=d_head)
+        self.attn3 = Attention(query_dim=query_dim, heads=n_heads, dim_head=d_head)
+        self.ff = FeedForward(query_dim, activation_fn="geglu")
+        self.ff_extra = FeedForward(query_dim, activation_fn="geglu")
+
+        self.norm1 = nn.LayerNorm(query_dim)
+        self.norm2 = nn.LayerNorm(query_dim)
+        self.norm3 = nn.LayerNorm(query_dim)
+        self.norm4 = nn.LayerNorm(query_dim)
+        self.norm5 = nn.LayerNorm(query_dim)
+
+        self.register_parameter("alpha_attn", nn.Parameter(torch.tensor(0.0)))
+        self.register_parameter("alpha_dense", nn.Parameter(torch.tensor(0.0)))
+
+        self.enabled = True
+
+    def forward(self, x, objs, feat):
+        if not self.enabled:
+            return x
+
+        bs, nf = objs.shape[:2]
+        
+        n_visual = x.shape[1]
+        objs = objs.flatten(0, 1)
+        objs = self.linear(objs)
+        # bf, 20, -1 [bf, 1536, -1]
+        objs = objs + self.attn1(self.norm1(objs), encoder_hidden_states=x)
+        objs = objs.permute(1, 0, 2)
+        objs = objs + self.attn2(self.norm2(objs))
+        objs = objs + self.ff_extra(self.norm3(objs))
+        # 20, 32, 1280 -> 32, 20, 1280
+        objs = objs.permute(1, 0, 2)
+        if 'true' in os.environ.get("self_on"):
+            x = x + self.alpha_attn.tanh() * self.attn3(self.norm4(torch.cat([x, objs], dim=1)))[:, :n_visual, :]
+        else:
+            x = x + self.alpha_attn.tanh() * self.attn3(self.norm4(x), encoder_hidden_states=objs,)
+        x = x + self.alpha_dense.tanh() * self.ff(self.norm5(x))
+
+        return x
+
+@maybe_allow_in_graph
+class GatedCrossAttentionTrackFuse(nn.Module):
+    def __init__(self, query_dim, context_dim, n_heads, d_head):
+        super().__init__()
+        
+        self.attn1 = Attention(query_dim=query_dim, heads=n_heads, dim_head=d_head)
+        self.attn2 = Attention(query_dim=query_dim, heads=n_heads, dim_head=d_head)
+        self.ff = FeedForward(query_dim, activation_fn="geglu")
+
+        self.norm1 = nn.LayerNorm(query_dim)
+        self.norm2 = nn.LayerNorm(query_dim)
+        self.norm3 = nn.LayerNorm(query_dim)
+
+        self.register_parameter("alpha_attn", nn.Parameter(torch.tensor(0.0)))
+        self.register_parameter("alpha_dense", nn.Parameter(torch.tensor(0.0)))
+
+        self.enabled = True
+        
+        self.linears = nn.Sequential(
+            nn.Linear(query_dim + 128, query_dim),
+            nn.SiLU(),
+            nn.Linear(query_dim, query_dim),
+            nn.SiLU(),
+            nn.Linear(query_dim, query_dim),
+        )
+
+    def forward(self, x, objs, feat):
+        if not self.enabled:
+            return x
+
+        bs, nf = objs.shape[:2]
+        feat = feat.view(feat.shape[0] // 20, 20, -1)
+        n_visual = x.shape[1]
+        objs = objs.flatten(0, 1)
+        objs = self.linears(torch.cat([feat, objs], dim=-1)).view(bs, nf, 20, -1).permute(0, 2, 1, 3).flatten(0, 1)
+
+        objs = objs + self.attn1(self.norm1(objs))
+        objs = objs.view(bs, 20, nf, -1).permute(0, 2, 1, 3).flatten(0, 1)
+        if 'true' in os.environ.get("self_on"):
+            x = x + self.alpha_attn.tanh() * self.attn2(self.norm2(torch.cat([x, objs], dim=1)))[:, :n_visual, :]
+        else:
+            x = x + self.alpha_attn.tanh() * self.attn2(self.norm2(x), encoder_hidden_states=objs,)
+        x = x + self.alpha_dense.tanh() * self.ff(self.norm3(x))
+
+        return x
 
 @maybe_allow_in_graph
 class BasicTransformerBlock(nn.Module):
@@ -155,7 +275,18 @@ class BasicTransformerBlock(nn.Module):
 
         # 4. Fuser
         if attention_type == "gated":
+            # for sdxl only!
+            # self.fuser = GatedSelfAttentionDense(dim, 1280, num_attention_heads, attention_head_dim)
             self.fuser = GatedSelfAttentionDense(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
+        if attention_type == "gated_injector":
+            self.fuser = GatedSelfAttentionDense(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
+            self.injector = GatedSelfAttentionTrack(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
+        if attention_type == "gated_injector_fuse":
+            self.fuser = GatedSelfAttentionDense(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
+            self.injector = GatedCrossAttentionTrackFuse(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
+        if attention_type == "gated_injector_fuse_q":
+            self.fuser = GatedSelfAttentionDense(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
+            self.injector = GatedCrossAttentionTrackFuseQuery(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
 
         # let chunk size default to None
         self._chunk_size = None
@@ -204,6 +335,13 @@ class BasicTransformerBlock(nn.Module):
         # 1.5 GLIGEN Control
         if gligen_kwargs is not None:
             hidden_states = self.fuser(hidden_states, gligen_kwargs["objs"])
+            tracklet_feat = gligen_kwargs.pop("tracklet_feat", None)
+            track_objs = gligen_kwargs["track_objs"]
+            padding_feat = gligen_kwargs.pop("padding_feat", None)
+            if tracklet_feat is not None and track_objs is None:
+                hidden_states = self.injector(hidden_states, tracklet_feat)
+            if padding_feat is not None and track_objs is not None:
+                hidden_states = self.injector(hidden_states, track_objs, padding_feat)
         # 1.5 ends
 
         # 2. Cross-Attention
