@@ -27,8 +27,8 @@ The code is tested with Pytorch==2.0.1 and cuda 11.8 on A800 servers. To setup t
 ```bash
 cd ${ROOT}
 pip install -r requirements.txt
-# continue to install `third_party`s
 ```
+Then, continue to install `third_party` requirements, follow:
 #### Install MMTracking
 ```bash
 pip install https://download.openmmlab.com/mmcv/dist/cu117/torch2.0.0/mmcv-2.0.0-cp310-cp310-manylinux1_x86_64.whl
@@ -51,7 +51,7 @@ Please download the datasets from the official websites.
 
 YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users in China): https://opendatalab.com/YouTubeVIS2019/download
 
-### Pretrained Weights
+### Pretrained Weights (TBD)
 
 | ModelScope Version | Stable Video Diffusion Version |
 |:------------------:|--------------------------------|
