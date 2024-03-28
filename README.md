@@ -55,7 +55,7 @@ YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users
 
 | ModelScope Version | Stable Video Diffusion Version |
 |:------------------:|--------------------------------|
-| [weight]()         | Our training are based on `stabilityai/stable-video-diffusion-img2vid`. You can access the following links to obtain the weights for stage1 and stage2:<br>[Stage1]()<br>[Stage2]() |
+| [weight](https://huggingface.co/pengxiang/trackdiffusion_ytvis)         | Our training are based on `stabilityai/stable-video-diffusion-img2vid`. You can access the following links to obtain the weights for stage1 and stage2:<br>[Stage1](https://huggingface.co/pengxiang/trackdiffusion_ytvis)<br>[Stage2](https://huggingface.co/pengxiang/trackdiffusion_ytvis) |
 
 
 ## Training
@@ -129,18 +129,6 @@ Launch training with (with 8xA800):
 bash ./scripts/stage2.sh
 ```
 
-### 3. WebDemo
-To simplify the interaction, we use an LLM to automatically generate trajectories, so please remember to replace the OpenAI key in the file(`client.api_key`).
-```bash
-python web_demo.py
-```
-
-- Upload an image.
-- Click the **Detect Objects** button
-- Write your motion prompt (based on GPT-4)
-- Click **Gen Video** button
-
-![webdemo](assets/figs/webdemo.png)
 ## Results
 
 - Compare TrackDiffusion with other methods for generation quality:
