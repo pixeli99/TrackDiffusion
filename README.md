@@ -51,7 +51,7 @@ Please download the datasets from the official websites.
 
 YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users in China): https://opendatalab.com/YouTubeVIS2019/download
 
-### Pretrained Weights (TBD)
+### Pretrained Weights
 
 | ModelScope Version | Stable Video Diffusion Version |
 |:------------------:|--------------------------------|
