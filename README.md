@@ -55,7 +55,7 @@ YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users
 
 | ModelScope Version | Stable Video Diffusion Version |
 |:------------------:|--------------------------------|
-| [weight](https://huggingface.co/pengxiang/trackdiffusion_ytvis)         | Our training are based on `stabilityai/stable-video-diffusion-img2vid`. You can access the following links to obtain the weights for stage1 and stage2:<br>[Stage1](https://huggingface.co/pengxiang/trackdiffusion_ytvis)<br>[Stage2](https://huggingface.co/pengxiang/trackdiffusion_ytvis) |
+| [weight](https://huggingface.co/pengxiang/TrackDiffusion_ModelScope)         | Our training are based on `stabilityai/stable-video-diffusion-img2vid`. You can access the following links to obtain the weights for stage1 and stage2:<br>[Stage1](https://huggingface.co/pengxiang/TrackDiffusion_SVD_Stage1)<br>[Stage2](https://huggingface.co/pengxiang/TrackDiffusion_SVD_Stage2) |
 
 
 ## Training
