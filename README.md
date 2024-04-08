@@ -143,6 +143,16 @@ bash ./scripts/stage2.sh
 
 More results can be found in the main paper.
 
+## The GeoDiffusion Family
+
+We aim to construct a controllable and flexible pipeline for perception data corner case generation and visual world modeling! Check our latest works:
+
+- [GeoDiffusion](https://kaichen1998.github.io/projects/geodiffusion/): text-prompted geometric controls for 2D object detection.
+- [MagicDrive](https://gaoruiyuan.com/magicdrive/): multi-view street scene generation for 3D object detection.
+- [TrackDiffusion](https://kaichen1998.github.io/projects/trackdiffusion/): multi-object video generation for MOT tracking.
+- [DetDiffusion](https://arxiv.org/abs/2403.13304): customized corner case generation.
+- [Geom-Erasing](https://arxiv.org/abs/2310.05873): geometric controls for implicit concept removal.
+
 ## Cite Us
 
 ```bibtex
