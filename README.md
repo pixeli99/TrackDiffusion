@@ -119,19 +119,9 @@ bash ./scripts/t2v.sh
 
 ### 3. For I2V Training(WIP)
 
-**Stage 1: Training with RGB boxes**
+For its implementation on Stable Video Diffusion, please refer to**
 
-Launch training with (with 8xA800):
-```bash
-bash ./scripts/stage1.sh
-```
-
-**Stage 2: Training with boxes only**
-
-Launch training with (with 8xA800):
-```bash
-bash ./scripts/stage2.sh
-```
+[TrackDiffusion_SVD](https://github.com/pixeli99/trackdiff_svd)
 
 ## Demo
 
