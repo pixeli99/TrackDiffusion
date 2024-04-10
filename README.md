@@ -33,7 +33,7 @@ Then, continue to install `third_party` requirements, follow:
 ```bash
 pip install https://download.openmmlab.com/mmcv/dist/cu117/torch2.0.0/mmcv-2.0.0-cp310-cp310-manylinux1_x86_64.whl
 
-git clone https://github.com/open-mmlab/mmtracking.git -b v1.0.0rc0
+git clone https://github.com/open-mmlab/mmtracking.git -b dev-1.x
 
 cd mmtracking
 pip install -e .
@@ -109,11 +109,13 @@ The folder structure will be as following after your run these scripts:
 ### 2. For T2V Training
 
 Launch training with (with 8xA800):
+
+If you encounter an error similar to `AssertionError: MMEngine==0.10.3 is used but incompatible. Please install mmengine>=0.0.0, <0.2.0.`, please directly jump to that line of code and comment it out.
 ```bash
 bash ./scripts/t2v.sh
 ```
 
-### 3. For I2V Training
+### 3. For I2V Training(WIP)
 
 **Stage 1: Training with RGB boxes**
 

@@ -50,8 +50,9 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         dataset_version='2021',
-        ann_file='annotations/youtube_vis_2021_valid.json',
-        # ann_file='annotations/youtube_vis_2021_train.json',
+        # TODO: split the train set into train and val set
+        # ann_file='annotations/youtube_vis_2021_valid.json',
+        ann_file='annotations/youtube_vis_2021_train.json',
         data_prefix=dict(img_path='train/JPEGImages'),
         pipeline=test_pipeline,
         test_mode=True,
