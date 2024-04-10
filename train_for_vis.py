@@ -859,7 +859,7 @@ def main():
                                           device=latents.device,
                                           generator=generator)
                     # Sample masks for the edit prompts.
-                    prompt_mask = random_p < 2 * args.conditioning_dropout_prob
+                    prompt_mask = random_p < args.conditioning_dropout_prob
                     prompt_mask = prompt_mask.reshape(bsz, 1, 1)
                     # Final text conditioning.
                     null_conditioning = text_encoder(
