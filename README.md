@@ -55,7 +55,7 @@ We also provide the text caption files for the ytvis dataset, please download fr
 
 | T2V Version | Stable Video Diffusion Version |
 |:------------------:|:------------------------------:|
-| Our training are based on `pengxiang/GLIGEN_1_4`. You can access the following links to obtain the trained weights:<br>[weight](https://huggingface.co/pengxiang/TrackDiffusion_ModelScope)         | Our training are based on `stabilityai/stable-video-diffusion-img2vid`. You can access the following links to obtain the weights for stage1 and stage2:<br>[Stage1](https://huggingface.co/pengxiang/TrackDiffusion_SVD_Stage1)<br>[Stage2](https://huggingface.co/pengxiang/TrackDiffusion_SVD_Stage2) |
+| Our training are based on `pengxiang/GLIGEN_1_4`. You can access the following links to obtain the trained weights:<br><br>[weight](https://huggingface.co/pengxiang/TrackDiffusion_ModelScope)         | Our training are based on `stabilityai/stable-video-diffusion-img2vid`. You can access the following links to obtain weights for stage 1 and 2:<br>[Stage1](https://huggingface.co/pengxiang/TrackDiffusion_SVD_Stage1)<br>[Stage2](https://huggingface.co/pengxiang/TrackDiffusion_SVD_Stage2) |
 
 
 ## Training
