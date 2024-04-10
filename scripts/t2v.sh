@@ -1,4 +1,4 @@
-export MODEL_DIR="/18940970966/gligen-1-4"
+export MODEL_DIR="/path/to/gligen-1-4"
 export ADD_INS_EMBED=true
 export open_time_embedding=learnable_frame
 export open_box_attn=disable
@@ -20,7 +20,7 @@ accelerate launch train_for_vis.py \
     --seed=1 \
     --mixed_precision="fp16" \
     --output_dir=./outputs \
-    --pretrain_unet=/18940970966/diffusion_re/Tracklet2Video/outputs_video_gligen \
+    --pretrain_unet=/path/to/unet \
     --report_to=tensorboard \
     --num_frames=16 \
     --fg_reweight=2.0 \
