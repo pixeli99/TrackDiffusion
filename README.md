@@ -68,30 +68,11 @@ We use CocoVID to maintain all datasets in this codebase. In this case, you need
 
 ```python
 cd ./third_party/mmtracking
-
-# YouTube-VIS 2019
-python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtube_vis_2019 -o ./data/youtube_vis_2019/annotations --version 2019
-
 # YouTube-VIS 2021
 python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtube_vis_2021 -o ./data/youtube_vis_2021/annotations --version 2021
 ```
 The folder structure will be as following after your run these scripts:
 ```
-│   ├── youtube_vis_2019
-│   │   │── train
-│   │   │   │── JPEGImages
-│   │   │   │── ......
-│   │   │── valid
-│   │   │   │── JPEGImages
-│   │   │   │── ......
-│   │   │── test
-│   │   │   │── JPEGImages
-│   │   │   │── ......
-│   │   │── train.json (the official annotation files)
-│   │   │── valid.json (the official annotation files)
-│   │   │── test.json (the official annotation files)
-│   │   │── annotations (the converted annotation file)
-│   │
 │   ├── youtube_vis_2021
 │   │   │── train
 │   │   │   │── JPEGImages
