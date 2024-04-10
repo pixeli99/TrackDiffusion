@@ -25,6 +25,8 @@ accelerate launch train_for_vis.py \
     --num_frames=16 \
     --fg_reweight=2.0 \
     --cfg_name=youtube_cfg_480.py \
+    --geo_train \
+    --train_mode temp \
     --allow_tf32
 
 
