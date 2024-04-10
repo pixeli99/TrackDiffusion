@@ -70,6 +70,7 @@ python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtub
 ```
 The folder structure will be as following after your run these scripts:
 ```
+├── data
 │   ├── youtube_vis_2021
 │   │   │── train
 │   │   │   │── JPEGImages
