@@ -51,6 +51,8 @@ Please download the datasets from the official websites.
 
 YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users in China): https://opendatalab.com/YouTubeVIS2019/download
 
+We also provide caption files for the ytvis dataset, please download from [Google Drive](https://drive.google.com/file/d/1dz_H6xkzgPJC5Jstqy6BKDrKqZ_nuU5Y/view?usp=sharing).
+
 ### Pretrained Weights
 
 | ModelScope Version | Stable Video Diffusion Version |
@@ -130,6 +132,10 @@ Launch training with (with 8xA800):
 ```bash
 bash ./scripts/stage2.sh
 ```
+
+## Demo
+
+Check `demo.ipynb` for more details.
 
 ## Results
 
