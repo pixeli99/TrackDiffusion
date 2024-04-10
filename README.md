@@ -6,8 +6,6 @@
 
 Pytorch implementation of [TrackDiffusion: Tracklet-Conditioned Video Generation via Diffusion Models](https://arxiv.org/abs/2312.00651)
 
-✨**If you want SVD version, please find the code at the [SVD branch](https://github.com/pixeli99/TrackDiffusion/tree/SVD).**
-
 ## Abstract 
 
 Despite remarkable achievements in video synthesis, achieving granular control over complex dynamics, such as nuanced movement among multiple interacting objects, still presents a significant hurdle for dynamic world modeling, compounded by the necessity to manage appearance and disappearance, drastic scale changes, and ensure consistency for instances across frames.
@@ -102,18 +100,8 @@ bash ./scripts/t2v.sh
 
 ### 3. For I2V Training (WIP)
 
-**Stage 1: Training with RGB boxes**
-```bash
-# Launch training with (with 8xA800):
+✨**If you want SVD version, please find the code at the [SVD branch](https://github.com/pixeli99/TrackDiffusion/tree/SVD).**
 
-bash ./scripts/stage1.sh
-```
-**Stage 2: Training with boxes only**
-```bash
-# Launch training with (with 8xA800):
-
-bash ./scripts/stage2.sh
-```
 ## Demo
 
 Check `demo.ipynb` for more details.
