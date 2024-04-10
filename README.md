@@ -100,7 +100,7 @@ bash ./scripts/t2v.sh
 
 ✨**If you want SVD version, please find the code at the [SVD branch](https://github.com/pixeli99/TrackDiffusion/tree/SVD).**
 
-## Demo
+## Inference
 
 Check `demo.ipynb` for more details.
 
