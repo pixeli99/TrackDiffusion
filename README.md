@@ -47,11 +47,9 @@ pip install -e .
 
 ### Dataset
 Please download the datasets from the official websites.
-[YouTube-VIS](https://youtube-vos.org/dataset/vis/)
+[YouTube-VIS 2021](https://youtube-vos.org/dataset/vis/)
 
-YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users in China): https://opendatalab.com/YouTubeVIS2019/download
-
-We also provide caption files for the ytvis dataset, please download from [Google Drive](https://drive.google.com/file/d/1dz_H6xkzgPJC5Jstqy6BKDrKqZ_nuU5Y/view?usp=sharing).
+We also provide the text caption files for the ytvis dataset, please download from [Google Drive](https://drive.google.com/file/d/1dz_H6xkzgPJC5Jstqy6BKDrKqZ_nuU5Y/view?usp=sharing).
 
 ### Pretrained Weights
 
