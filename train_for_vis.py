@@ -549,7 +549,7 @@ def main():
                                         subfolder="vae",
                                         revision=args.revision)
     unet = UNet3DConditionModel.from_pretrained(
-        '/gligen2damo' if args.pretrain_unet is None else args.pretrain_unet,
+        args.pretrained_model_name_or_path if args.pretrain_unet is None else args.pretrain_unet,
         subfolder="unet",
         low_cpu_mem_usage=False,
     )
