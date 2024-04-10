@@ -66,7 +66,6 @@ We use CocoVID to maintain all datasets in this codebase. In this case, you need
 
 ```python
 cd ./third_party/mmtracking
-# YouTube-VIS 2021
 python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtube_vis_2021 -o ./data/youtube_vis_2021/annotations --version 2021
 ```
 The folder structure will be as following after your run these scripts:
