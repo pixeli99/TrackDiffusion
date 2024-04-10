@@ -6,6 +6,8 @@
 
 Pytorch implementation of [TrackDiffusion: Tracklet-Conditioned Video Generation via Diffusion Models](https://arxiv.org/abs/2312.00651)
 
+✨**If you want ModelScope version, please find the code at the [main branch](https://github.com/pixeli99/TrackDiffusion).**
+
 ## Abstract 
 
 Despite remarkable achievements in video synthesis, achieving granular control over complex dynamics, such as nuanced movement among multiple interacting objects, still presents a significant hurdle for dynamic world modeling, compounded by the necessity to manage appearance and disappearance, drastic scale changes, and ensure consistency for instances across frames.
@@ -51,6 +53,8 @@ Please download the datasets from the official websites.
 
 YouTube-VIS 2019 dataset can be download from OpenDataLab (recommended for users in China): https://opendatalab.com/YouTubeVIS2019/download
 
+We also provide caption files for the ytvis dataset, please download from [Google Drive](https://drive.google.com/file/d/1dz_H6xkzgPJC5Jstqy6BKDrKqZ_nuU5Y/view?usp=sharing).
+
 ### Pretrained Weights
 
 | ModelScope Version | Stable Video Diffusion Version |
@@ -66,30 +70,11 @@ We use CocoVID to maintain all datasets in this codebase. In this case, you need
 
 ```python
 cd ./third_party/mmtracking
-
-# YouTube-VIS 2019
-python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtube_vis_2019 -o ./data/youtube_vis_2019/annotations --version 2019
-
 # YouTube-VIS 2021
 python ./tools/dataset_converters/youtubevis/youtubevis2coco.py -i ./data/youtube_vis_2021 -o ./data/youtube_vis_2021/annotations --version 2021
 ```
 The folder structure will be as following after your run these scripts:
 ```
-│   ├── youtube_vis_2019
-│   │   │── train
-│   │   │   │── JPEGImages
-│   │   │   │── ......
-│   │   │── valid
-│   │   │   │── JPEGImages
-│   │   │   │── ......
-│   │   │── test
-│   │   │   │── JPEGImages
-│   │   │   │── ......
-│   │   │── train.json (the official annotation files)
-│   │   │── valid.json (the official annotation files)
-│   │   │── test.json (the official annotation files)
-│   │   │── annotations (the converted annotation file)
-│   │
 │   ├── youtube_vis_2021
 │   │   │── train
 │   │   │   │── JPEGImages
@@ -115,21 +100,23 @@ If you encounter an error similar to `AssertionError: MMEngine==0.10.3 is used b
 bash ./scripts/t2v.sh
 ```
 
-### 3. For I2V Training(WIP)
+### 3. For I2V Training (WIP)
 
 **Stage 1: Training with RGB boxes**
-
-Launch training with (with 8xA800):
 ```bash
+# Launch training with (with 8xA800):
+
 bash ./scripts/stage1.sh
 ```
-
 **Stage 2: Training with boxes only**
-
-Launch training with (with 8xA800):
 ```bash
+# Launch training with (with 8xA800):
+
 bash ./scripts/stage2.sh
 ```
+## Demo
+
+Check `demo.ipynb` for more details.
 
 ## Results
 
